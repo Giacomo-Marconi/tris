@@ -20,27 +20,48 @@ body {
     max-width: 600px;
 }
 
-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 1rem;
-    color: #555;
+header {
+    width: 100%;
+    background-color: #333;
+    padding: 2rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
-
+header h1 {
+    font-size: 2.5em;
+    color: #fff;
+}
 
 main {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
 }
 
 .player {
     background: #fff;
+    width: 150px;
+    height: 180px;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 1rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.proPic {
+    background-color: #333;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
 }
 
 .player h2 {
@@ -53,7 +74,7 @@ main {
     margin-top: 0.5rem;
 }
 
-#gioco {
+#gameGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 10px;
@@ -73,6 +94,7 @@ main {
     font-size: 2em;
     border-radius: 10px;
     cursor: pointer;
+    user-select: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -80,6 +102,11 @@ main {
 .card:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.no-hover:hover {
+    transform: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .overlay {
@@ -126,3 +153,49 @@ main {
 .modal .btn:hover {
     background: #303f9f;
 }
+
+.glow-green {
+    box-shadow: 0 0 15px 5px green;
+}
+
+.glow-yellow {
+    box-shadow: 0 0 15px 5px yellow;
+}
+
+.glow-red {
+    box-shadow: 0 0 15px 5px red;
+}
+
+.winner {
+    animation: moveAndEnlarge 0.5s forwards;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    box-shadow: 0 0px 50px gold;
+}
+
+@keyframes moveAndEnlarge {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+    }
+}
+
+.loser {
+    animation: moveOutward 0.5s forwards;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+@keyframes moveOutward {
+    0% {
+        transform: translateX(0) scale(1);
+    }
+    100% {
+        transform: translateX(calc(-25vw)) scale(1);
+    }
+}
+

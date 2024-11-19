@@ -1,13 +1,14 @@
 let selectedMode = null;
 let selectedDifficulty = null;
 
+// Initialize the game board with empty cells represented by -1
+const gameBoard = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+const players = ["X", "O"]; // Player symbols
+let currentPlayer = 0; // Index of the current player
+let scores = [0, 0]; // Scores for each player
+let allowMoves = true; // Flag to allow or disallow moves
 
-const game = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
-const player = ["X", "O"];
-let currentPlayer = 0;
-let win = [0, 0]
-let accetMosse = true;
-
+// Function to select the game mode
 function selectMode(mode) {
     selectedMode = mode;
     console.log(selectedMode);
@@ -15,138 +16,148 @@ function selectMode(mode) {
     document.getElementById('difficultySelector').style.display = 'flex';
 }
 
+// Function to start the game with the selected difficulty
 function startGame(difficulty) {
     selectedDifficulty = difficulty;
     document.getElementById('difficultySelector').style.display = 'none';
-    //initializeGame(selectedMode, difficulty);
 }
 
-
+// Utility function to pause execution for a given time
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function clicked(r, c) {
-    if(!accetMosse){
-        return;
+// Function to handle a player's move
+async function clicked(row, col) {
+    if (!allowMoves || gameBoard[row - 1][col - 1] !== -1) {
+        return; // Prevent move if not allowed or cell is occupied
     }
-    //check move
-    if(game[r-1][c-1] === -1 && currentPlayer === 0) {
-        //do move
-        game[r-1][c-1] = currentPlayer;
-        document.getElementById(`${r}${c}`).innerHTML = player[0];
-        currentPlayer = 1 - currentPlayer;
-        await sleep(100);
-        
-        const winner = checkWin();
-        console.log("winner: " + winner);
-        //if no winner
-        if(winner==-1){
-            if(checkPatta()){
-                alert('Patta');
-                accetMosse = false;
-                clearGame();
-                return;
-            }
-            await computerMove();
-        }else{
-            win[winner-1]++;
-            console.log("score"+winner);
-            document.getElementById('score'+(winner)).innerHTML = win[winner-1];
-            await sleep(100);
-            //if win the game
-            if(win[winner-1]>=selectedMode/2){
-                accetMosse = false;
-                alert('Player ' + winner + ' wins THE GAME');
-                window.location.reload();
-            }else{
-                alert('Player ' + winner + ' wins');
-                clearGame();
-            }
-        }
-    } else {
-        alert('Invalid Move');
-    }
-}
-
-async function computerMove() {
-    let moves = null
-
-    if(selectedDifficulty === 'easy') {
-        moves = randomGame();
-    }else{
-        moves = makeMoveHard();
-    }
-
-    //get coords
-    const r = moves[0];
-    const c = moves[1];
-
-    //do moves
-    game[r][c] = currentPlayer;
-    document.getElementById(`${r+1}${c+1}`).innerHTML = player[1];
-    currentPlayer = 1 - currentPlayer;
-
+    // Make the move
+    gameBoard[row - 1][col - 1] = currentPlayer;
+    const cell = document.getElementById(`${row}${col}`);
+    cell.innerHTML = players[currentPlayer];
+    cell.style.cursor = 'default';
+    cell.classList.add('no-hover'); // Disable hover effect
+    currentPlayer = 1 - currentPlayer; // Switch player
     await sleep(100);
 
     const winner = checkWin();
-    //if winnner
-    if(winner!=-1){
-        console.log("winner: " + winner);
-        win[winner-1]++;
-        document.getElementById('score'+(winner)).innerHTML = win[winner-1];
-        await sleep(100);
-        console.log("win: " + win[0] + " " + win[1]);
-        //if win the game
-        if(win[winner-1]>=selectedMode/2){
-            accetMosse = false;
-            alert('Player ' + winner + ' wins THE GAME');
-            window.location.reload();
-        }else{
-            alert('Player ' + winner + ' wins');
+    console.log("winner: " + winner);
+    // If no winner
+    if (winner == -1) {
+        if (checkDraw()) {
+            applyGlow('draw');
+            allowMoves = false;
             clearGame();
+            return;
         }
-    }else{
-        //if draw
-        if(checkPatta()){
-            alert('Patta');
-            accetMosse = false;
+        await computerMove();
+    } else {
+        scores[winner - 1]++;
+        console.log("score" + winner);
+        document.getElementById('score' + (winner)).innerHTML = scores[winner - 1];
+        await sleep(100);
+        // If a player wins the game
+        if (scores[winner - 1] >= selectedMode / 2) {
+            allowMoves = false;
+            showFinalWinner(winner);
+        } else {
+            applyGlow('win', winner);
             clearGame();
         }
     }
 }
 
+// Function to handle the computer's move
+async function computerMove() {
+    if (!allowMoves) {
+        return;
+    }
+
+    allowMoves = false; // Disable player moves during the computer's turn
+
+    let moves = null;
+
+    if (selectedDifficulty === 'easy') {
+        moves = randomMove();
+        await sleep(450);
+    } else {
+        moves = makeHardMove();
+        await sleep(450);
+    }
+
+    // Get coordinates
+    const row = moves[0];
+    const col = moves[1];
+
+    // Make the move
+    if (gameBoard[row][col] === -1) { // Ensure the move is valid
+        gameBoard[row][col] = currentPlayer;
+        const cell = document.getElementById(`${row + 1}${col + 1}`);
+        cell.innerHTML = players[currentPlayer];
+        cell.style.cursor = 'default'; // Change cursor to default
+        cell.classList.add('no-hover'); // Disable hover effect
+        currentPlayer = 1 - currentPlayer;
+
+        await sleep(100);
+
+        const winner = checkWin();
+        // If there is a winner
+        if (winner != -1) {
+            console.log("winner: " + winner);
+            scores[winner - 1]++;
+            document.getElementById('score' + (winner)).innerHTML = scores[winner - 1];
+            await sleep(100);
+            console.log("win: " + scores[0] + " " + scores[1]);
+            // If a player wins the game
+            if (scores[winner - 1] >= selectedMode / 2) {
+                allowMoves = false;
+                showFinalWinner(winner);
+            } else {
+                applyGlow('win', winner);
+                clearGame();
+            }
+        } else {
+            // If it's a draw
+            if (checkDraw()) {
+                applyGlow('draw');
+                allowMoves = false;
+                clearGame();
+                return;
+            }
+        }
+    }
+
+    allowMoves = true; // Re-enable player moves after the computer's turn
+}
 
 
+// Function to check if there is a winner
 function checkWin() {
-    for(let i = 0; i < 3; i++) {
-        if(game[i][0] === game[i][1] && game[i][1] === game[i][2] && game[i][0] !== -1) {
-            //alert('Player ' + (game[i][0] + 1) + ' wins');
-            return (game[i][0] + 1);
+    for (let i = 0; i < 3; i++) {
+        if (gameBoard[i][0] === gameBoard[i][1] && gameBoard[i][1] === gameBoard[i][2] && gameBoard[i][0] !== -1) {
+            return (gameBoard[i][0] + 1);
         }
-        if(game[0][i] === game[1][i] && game[1][i] === game[2][i] && game[0][i] !== -1) {
-            //alert('Player ' + (game[0][i] + 1) + ' wins');
-            return (game[0][i] + 1);
+        if (gameBoard[0][i] === gameBoard[1][i] && gameBoard[1][i] === gameBoard[2][i] && gameBoard[0][i] !== -1) {
+            return (gameBoard[0][i] + 1);
         }
     }
 
-    if(game[0][0] === game[1][1] && game[1][1] === game[2][2] && game[0][0] !== -1) {
-        //alert('Player ' + (game[0][0] + 1) + ' wins');
-        return (game[0][0] + 1);
+    if (gameBoard[0][0] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][2] && gameBoard[0][0] !== -1) {
+        return (gameBoard[0][0] + 1);
     }
 
-    if(game[0][2] === game[1][1] && game[1][1] === game[2][0] && game[0][2] !== -1) {
-        //alert('Player ' + (game[0][2] + 1) + ' wins');
-        return (game[0][2] + 1);
+    if (gameBoard[0][2] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][0] && gameBoard[0][2] !== -1) {
+        return (gameBoard[0][2] + 1);
     }
     return -1;
 }
 
-function checkPatta() {
-    //check if there is a draw
-    for (let i = 0; i < game.length; i++) {
-        for (let j = 0; j < game[i].length; j++) {
-            if(game[i][j] === -1) {
+// Function to check if the game is a draw
+function checkDraw() {
+    for (let i = 0; i < gameBoard.length; i++) {
+        for (let j = 0; j < gameBoard[i].length; j++) {
+            if (gameBoard[i][j] === -1) {
                 return false;
             }
         }
@@ -154,45 +165,44 @@ function checkPatta() {
     return true;
 }
 
+// Function to generate a random move for the computer
+function randomMove() {
+    let row;
+    let col;
 
-
-function randomGame(){
-    //ger row r and column c random
-    let r;
-    let c;
-    //while is not empty
-    do{
-        c = Math.floor(Math.random() * 3);
-        r = Math.floor(Math.random() * 3);
-    }while (game[r][c] !== -1);
-    return [r, c];
+    // While is not empty
+    do {
+        col = Math.floor(Math.random() * 3);
+        row = Math.floor(Math.random() * 3);
+    } while (gameBoard[row][col] !== -1);
+    return [row, col];
 }
 
-
-
+// Function to clear the game board
 function clearGame() {
-    //clear table game
-    for (let i = 0; i < game.length; i++) {
-        for (let j = 0; j < game[i].length; j++) {
-            game[i][j] = -1;
-            document.getElementById(`${i+1}${j+1}`).innerHTML = '';
+    for (let i = 0; i < gameBoard.length; i++) {
+        for (let j = 0; j < gameBoard[i].length; j++) {
+            gameBoard[i][j] = -1;
+            const cell = document.getElementById(`${i + 1}${j + 1}`);
+            cell.innerHTML = '';
+            cell.style.cursor = 'pointer'; // Reset cursor to pointer
+            cell.classList.remove('no-hover'); // Re-enable hover effect
         }
     }
-    //accept new moves
-    accetMosse = true;
+    allowMoves = true;
     currentPlayer = 0;
 }
 
-function makeMoveHard() {
+// Function to make a strategic move for the computer
+function makeHardMove() {
     const PLAYER = 0;
-    const PC = 1;
+    const CPU = 1;
 
     function getWinningMove(board, player) {
         const winningLines = [
-            // Righe, colonne e diagonali
             [0, 1, 2], [3, 4, 5], [6, 7, 8],
             [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]             
+            [0, 4, 8], [2, 4, 6]
         ];
         for (let line of winningLines) {
             const [a, b, c] = line;
@@ -207,43 +217,83 @@ function makeMoveHard() {
         return board.findIndex(cell => cell === -1);
     }
 
-    
     function findBestMove(board) {
-        //istant wint
-        let move = getWinningMove(board, PC);
+        let move = getWinningMove(board, CPU);
         if (move !== -1) return move;
 
-        //no win player
         move = getWinningMove(board, PLAYER);
         if (move !== -1) return move;
 
-        //center
         if (board[4] === -1) return 4;
 
-        //angle
         const corners = [0, 2, 6, 8];
         for (let corner of corners) {
             if (board[corner] === -1) return corner;
         }
 
-        //lateral
         const sides = [1, 3, 5, 7];
         for (let side of sides) {
             if (board[side] === -1) return side;
         }
 
-        //first available
         return getFirstAvailableMove(board);
     }
 
-    const flatBoard = game.flat();
+    const flatBoard = gameBoard.flat();
 
     const bestMove = findBestMove(flatBoard);
     if (bestMove !== -1) {
-        flatBoard[bestMove] = PC;
+        flatBoard[bestMove] = CPU;
     }
 
-    const r = Math.floor(bestMove / 3);
-    const c = bestMove % 3;
-    return [r, c];
+    const row = Math.floor(bestMove / 3);
+    const col = bestMove % 3;
+    return [row, col];
 }
+
+// Function to apply glow effects based on the result
+function applyGlow(result, winner = null) {
+    const player1 = document.getElementById('player1');
+    const cpu = document.getElementById('cpu');
+
+    switch (result) {
+        case 'win':
+            if (winner === 1) {
+                player1.classList.add('glow-green');
+                cpu.classList.add('glow-red');
+            } else {
+                cpu.classList.add('glow-green');
+                player1.classList.add('glow-red');
+            }
+            break;
+        case 'draw':
+            player1.classList.add('glow-yellow');
+            cpu.classList.add('glow-yellow');
+            break;
+    }
+
+    setTimeout(() => {
+        player1.classList.remove('glow-green', 'glow-yellow', 'glow-red');
+        cpu.classList.remove('glow-green', 'glow-yellow', 'glow-red');
+    }, 2000);
+}
+
+// Function to show the final winner by hiding the grid and enlarging the winner
+function showFinalWinner(winner) {
+    const player1 = document.getElementById('player1');
+    const cpu = document.getElementById('cpu');
+    const gameGrid = document.getElementById('gameGrid');
+
+    gameGrid.style.display = 'none';
+
+    if (winner === 1) {
+        player1.classList.add('winner');
+        cpu.classList.add('loser');
+    } else {
+        cpu.classList.add('winner');
+        player1.classList.add('loser');
+    }
+}
+
+
+
