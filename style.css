@@ -26,6 +26,8 @@ header h1 {
     color: #555;
 }
 
+
+
 main {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
