@@ -6,16 +6,16 @@
 
 ## 📋 Features
 
-- **Game Modes**:
+**Game Modes**:
  - **Single Game**: Play a single match to determine the winner.
  - **Best of 3**: First to win two games is the overall winner.
  - **Best of 5**: First to win three games is the overall winner.
 
-- **Difficulty Levels**:
+**Difficulty Levels**:
  - **Easy**: Perfect for beginners.
  - **Hard**: For experienced players.
 
-- **Modern interface**:
+**Modern interface**:
  - Responsive and animated grid.
  - Real-time score display.
  - Mode and difficulty selection via modal windows.
@@ -34,7 +34,7 @@
 
 All you have to do is to clink on this link: https://[name].hackclub.app/
 
-Really! Is that simple ^_^
+Really! Is that simple 😄
 
 ---
 
@@ -66,7 +66,7 @@ Contributions, suggestions and improvements are always welcome! To contribute:
 1. Fork the repository.
 2. Create a new branch for your feature:
    ```bash
-   git checkout -b feature-your-feature-name
+   git checkout -b feature-[your-feature-name]
    ```
 3. Submit a pull request when ready
 
