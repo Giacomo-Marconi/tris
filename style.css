@@ -1,0 +1,37 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f1f1f1;
+}
+
+#gioco{
+    width: 300px;
+    height: 300px;
+    display: grid;
+    /*set 3*3*/
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    /* background-color: #c0c0c0; */
+    border-radius: 15px;
+    gap: 1vh;
+}
+
+.card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    color: #fff;
+    background-color: #333;
+    cursor: pointer;
+    transition: 0.5s;
+    border-radius: 15px;
+}
