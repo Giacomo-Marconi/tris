@@ -23,16 +23,35 @@ body {
 header {
     width: 100%;
     background-color: #333;
-    padding: 2rem 0;
+    padding: 2rem 2rem;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 35%;/*to fix cazzo --> allineare bene e non cosi*/
 }
 
 header h1 {
     font-size: 2.5em;
     color: #fff;
+}
+
+#btn{
+    background-color: #3f51b5;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+#btn:hover {
+    scale: 1.1;
 }
 
 main {
