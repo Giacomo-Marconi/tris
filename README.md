@@ -6,7 +6,7 @@
 
 ## 🛠️ How to play the game
 
-All you have to do is to click on this link: https://[name].hackclub.app/
+All you have to do is to click on this link: https://tris.figlolo.it
 
 Really! Is that simple 😄
 
