@@ -4,10 +4,20 @@
     box-sizing: border-box;
 }
 
+
+:root{
+    --rosa: #FFDAC6;
+    ---violetto: #B8B8FF;
+    --bluetto: #3f51b5;
+    --marescuro: #1B4965;
+
+}
+
 body {
     font-family: 'Arial', sans-serif;
     /* background-color: #f9f9f9; */
-    background-color: #f2a366;
+    /*background-color: #f2a366; */
+    background-color: var(--rosa);
     color: #333;
     display: flex;
     justify-content: center;
@@ -23,25 +33,25 @@ body {
 
 header {
     width: 100%;
-    background-color: #333;
+    /*background-color: #333;*/
     padding: 2rem 2rem;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
     display: flex;
-    justify-content: end;
+    justify-content: center;
     align-items: center;
     gap: 35%;/*to fix cazzo --> allineare bene e non cosi*/
 }
 
 header h1 {
     font-size: 2.5em;
-    color: #fff;
+    color: var(--marescuro);
 }
 
 #btn{
-    background-color: #3f51b5;
+    background-color: #eba665;
     color: #fff;
     padding: 0.8rem 1.5rem;
     margin: 0.5rem 0;
@@ -77,16 +87,23 @@ main {
 }
 
 .proPic {
-    background-color: #333;
+    background-color: #6A81B2;
     width: 100px;
     height: 100px;
     border-radius: 50%;
     margin-bottom: 0.5rem;
 }
 
+.proPic img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 .player h2 {
     font-size: 1.5em;
-    color: #555;
+    color: #6A81B2;
 }
 
 .player p {
@@ -109,7 +126,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #3f51b5;
+    background-color: #eba665;
     color: #fff;
     font-size: 2em;
     border-radius: 10px;
@@ -159,7 +176,7 @@ main {
 }
 
 .modal .btn {
-    background: #3f51b5;
+    background: var(---violetto);
     color: #fff;
     padding: 0.8rem 1.5rem;
     margin: 0.5rem 0;
@@ -171,7 +188,7 @@ main {
 }
 
 .modal .btn:hover {
-    background: #303f9f;
+    background: var(---violetto);
 }
 
 .glow-green {
