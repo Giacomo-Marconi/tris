@@ -68,8 +68,73 @@ async function clicked(row, col) {
     }
 }
 
-// Function to handle the computer's move
 async function computerMove() {
+    allowMoves = false; // Disable player moves during the computer's turn
+
+    let moves = null;
+
+    const random = Math.random();
+
+    if(random < selectedDifficulty){
+        console.log("hard move");
+        moves = makeHardMove();
+        await sleep(450);
+    }
+    else{
+        console.log("random move");
+        moves = randomMove();
+        await sleep(450);
+    }
+
+
+    // Get coordinates
+    const row = moves[0];
+    const col = moves[1];
+
+    // Make the move
+    if (gameBoard[row][col] === -1) { // Ensure the move is valid
+        gameBoard[row][col] = currentPlayer;
+        const cell = document.getElementById(`${row + 1}${col + 1}`);
+        cell.innerHTML = players[currentPlayer];
+        cell.style.cursor = 'default'; // Change cursor to default
+        cell.classList.add('no-hover'); // Disable hover effect
+        currentPlayer = 1 - currentPlayer;
+
+        await sleep(100);
+
+        const winner = checkWin();
+        // If there is a winner
+        if (winner != -1) {
+            console.log("winner: " + winner);
+            scores[winner - 1]++;
+            document.getElementById('score' + (winner)).innerHTML = scores[winner - 1];
+            await sleep(100);
+            console.log("win: " + scores[0] + " " + scores[1]);
+            // If a player wins the game
+            if (scores[winner - 1] >= selectedMode / 2) {
+                allowMoves = false;
+                showFinalWinner(winner);
+            } else {
+                applyGlow('win', winner);
+                clearGame();
+            }
+        } else {
+            // If it's a draw
+            if (checkDraw()) {
+                applyGlow('draw');
+                allowMoves = false;
+                clearGame();
+                return;
+            }
+        }
+    }
+
+    allowMoves = true; // Re-enable player moves after the computer's turn
+}
+
+
+// Function to handle the computer's move
+async function computerMove2() {
     if (!allowMoves) {
         return;
     }
